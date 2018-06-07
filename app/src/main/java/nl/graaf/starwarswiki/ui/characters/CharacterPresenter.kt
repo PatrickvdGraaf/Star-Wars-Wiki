@@ -34,8 +34,11 @@ class CharacterPresenter(private val mView: CharacterMVP.View) : CharacterMVP.Pr
         holder.nameTextView.text = character.name
         holder.birthTextView.text = character.birthYear
 
+        holder.setFavouriteIcon(character.isFavourite)
+
         holder.favButton.setOnClickListener({
-            //TODO
+            character.toggleFavourite()
+            holder.setFavouriteIcon(character.isFavourite)
         })
     }
 

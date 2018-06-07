@@ -16,11 +16,8 @@ import nl.graaf.starwarswiki.config.inflate
 class CharacterAdapter(private val mPresenter: CharacterMVP.Presenter)
     : RecyclerView.Adapter<CharacterAdapter.CharacterViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharacterViewHolder {
-        val view = parent.inflate(R.layout.list_character, false)
-        view.setOnClickListener({
-
-        })
-        return CharacterViewHolder(view, mPresenter)
+        return CharacterViewHolder(parent.inflate(R.layout.list_character, false),
+                mPresenter)
     }
 
     override fun getItemCount(): Int {
@@ -40,6 +37,14 @@ class CharacterAdapter(private val mPresenter: CharacterMVP.Presenter)
             view.setOnClickListener({
                 presenter.onItemSelected(layoutPosition)
             })
+        }
+
+        fun setFavouriteIcon(isFavourite: Boolean) {
+            if (isFavourite) {
+                favButton.setImageResource(R.drawable.ic_fav_24dp)
+            } else {
+                favButton.setImageResource(R.drawable.ic_fav_border_24dp)
+            }
         }
     }
 }

@@ -8,8 +8,6 @@ import java.io.Serializable
  *
  */
 
-data class Vehicle(
-        val name: String,
-        val model: String,
-        val length: Float
+data class HomeWorld(
+        val name: String
 ): Serializable

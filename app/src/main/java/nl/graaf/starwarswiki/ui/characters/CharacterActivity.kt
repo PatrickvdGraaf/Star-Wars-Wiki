@@ -12,6 +12,7 @@ import nl.graaf.starwarswiki.model.Character
 import nl.graaf.starwarswiki.ui.detail.DetailActivity
 
 class CharacterActivity : AppCompatActivity(), CharacterMVP.View {
+
     private val mPresenter by lazy { CharacterPresenter(this) }
     private lateinit var mSortingButton: FloatingActionButton
 
@@ -42,7 +43,6 @@ class CharacterActivity : AppCompatActivity(), CharacterMVP.View {
     override fun setSortingButtonIcon(image: Int) {
         mSortingButton.setImageResource(image)
     }
-
 
     override fun openDetailActivity(character: Character) {
         val intent = Intent(this, DetailActivity::class.java)

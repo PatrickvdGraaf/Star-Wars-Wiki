@@ -1,6 +1,7 @@
 package nl.graaf.starwarswiki.model
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 /**
  *
@@ -20,4 +21,4 @@ data class Film(
         val releaseDate: String,
         val characters: List<String>,
         val vehicles: List<String>
-)
+): Serializable

@@ -1,6 +1,8 @@
 package nl.graaf.starwarswiki.ui.detail
 
+import nl.graaf.starwarswiki.model.Character
 import nl.graaf.starwarswiki.model.Film
+import nl.graaf.starwarswiki.model.HomeWorld
 import nl.graaf.starwarswiki.model.Vehicle
 
 /**
@@ -9,39 +11,48 @@ import nl.graaf.starwarswiki.model.Vehicle
  *
  */
 
-class DetailPresenter(private val mView: DetailMVP.View) : DetailMVP.Presenter {
+class DetailPresenter(private val mView: DetailMVP.View, private val mCharacter: Character) : DetailMVP.Presenter {
     private val mInteractor by lazy { DetailInteractor(this) }
 
-    private var mFilms = listOf<Film>()
-    private var mVehicles = listOf<Vehicle>()
-
-    override fun showMovies(links: List<String>) {
-        mInteractor.getFilmsFromApi(links)
+    override fun loadMovies() {
+        mInteractor.getFilmsFromApi(mCharacter.filmUrls)
     }
 
-    override fun showVehicles(urls: List<String>) {
-        mInteractor.getVehiclesFromApi(urls)
+    override fun loadVehicles() {
+        mInteractor.getVehiclesFromApi(mCharacter.vehicleUrls)
+    }
+
+    override fun loadHomeWorld() {
+        mInteractor.getHomeWorldFromApi(mCharacter.homeWorldUrl)
     }
 
     override fun onGetVehiclesResponse(vehicles: List<Vehicle>) {
-        mVehicles = vehicles
+        mCharacter.vehiclesList = vehicles
 
         var v = ""
-        mVehicles.forEach({
+        vehicles.forEach({
             v += "${it.name}\n"
         })
-
-        mView.setVehicleText(v)
+        if (!v.isBlank()) {
+            mView.setVehicleText(v)
+        }
     }
 
     override fun onGetFilmsResponse(films: List<Film>) {
-        mFilms = films.toMutableList()
+        mCharacter.filmsList = films
 
         var movies = ""
-        mFilms.forEach({
+        films.forEach({
             movies += "${it.title}\n"
         })
 
-        mView.setMovieText(movies)
+        if (!movies.isBlank()) {
+            mView.setMovieText(movies)
+        }
+    }
+
+    override fun onGetHomeWorldResponse(homeWorld: HomeWorld) {
+        mCharacter.home = homeWorld
+        mView.setHomeWorldText(homeWorld.name)
     }
 }

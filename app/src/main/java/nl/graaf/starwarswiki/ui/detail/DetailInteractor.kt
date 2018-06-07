@@ -14,20 +14,25 @@ import timber.log.Timber
  *
  */
 class DetailInteractor(private val mPresenter: DetailMVP.Presenter) : DetailMVP.Interactor {
+    override fun getHomeWorldFromApi(link: String) {
+        val repository = CharacterRepositoryProvider.provideCharacterRepository()
+        repository.getHomeWorld(link)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({homeWorld ->
+                    mPresenter.onGetHomeWorldResponse(homeWorld)
+                })
+    }
+
     override fun getVehiclesFromApi(urls: List<String>) {
         val repository = CharacterRepositoryProvider.provideCharacterRepository()
-        val requests = ArrayList<Observable<Vehicle>>()
+        val requests = ArrayList<Observable<*>>()
 
         urls.forEach({ url ->
             requests.add(repository.getVehicle(url))
         })
 
-        Observable
-                .zip(requests) { results ->
-                    results
-                }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        getCollectionObservable(requests)
                 .subscribe({ response ->
                     val list = mutableListOf<Vehicle>()
                     response.forEach {
@@ -43,18 +48,13 @@ class DetailInteractor(private val mPresenter: DetailMVP.Presenter) : DetailMVP.
 
     override fun getFilmsFromApi(urls: List<String>) {
         val repository = CharacterRepositoryProvider.provideCharacterRepository()
-        val requests = ArrayList<Observable<Film>>()
+        val requests = ArrayList<Observable<*>>()
 
         urls.forEach({ url ->
             requests.add(repository.getFilm(url))
         })
 
-        Observable
-                .zip(requests) { results ->
-                    results
-                }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        getCollectionObservable(requests)
                 .subscribe({ response ->
                     val list = mutableListOf<Film>()
                     response.forEach {
@@ -71,5 +71,13 @@ class DetailInteractor(private val mPresenter: DetailMVP.Presenter) : DetailMVP.
                 }, { error ->
                     Timber.d("Get Film API call. \nError: ${error.localizedMessage}")
                 })
+    }
+
+    private fun getCollectionObservable(requests: ArrayList<Observable<out Any>>): Observable<Array<Any>> {
+        return Observable.zip(requests) { results ->
+            results
+        }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
     }
 }

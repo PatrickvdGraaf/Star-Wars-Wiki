@@ -1,6 +1,7 @@
 package nl.graaf.starwarswiki.ui.detail
 
 import nl.graaf.starwarswiki.model.Film
+import nl.graaf.starwarswiki.model.HomeWorld
 import nl.graaf.starwarswiki.model.Vehicle
 
 /**
@@ -13,17 +14,21 @@ class DetailMVP {
     interface View {
         fun setMovieText(m: String)
         fun setVehicleText(v: String)
+        fun setHomeWorldText(h: String)
     }
 
     interface Presenter {
-        fun showMovies(links: List<String>)
+        fun loadMovies()
         fun onGetFilmsResponse(films: List<Film>)
-        fun showVehicles(links: List<String>)
+        fun loadVehicles()
         fun onGetVehiclesResponse(vehicles: List<Vehicle>)
+        fun loadHomeWorld()
+        fun onGetHomeWorldResponse(homeWorld: HomeWorld)
     }
 
     interface Interactor {
         fun getFilmsFromApi(urls: List<String>)
         fun getVehiclesFromApi(links: List<String>)
+        fun getHomeWorldFromApi(link: String)
     }
 }
