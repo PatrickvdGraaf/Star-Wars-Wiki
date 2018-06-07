@@ -24,6 +24,7 @@ class DetailMVP {
         fun onGetVehiclesResponse(vehicles: List<Vehicle>)
         fun loadHomeWorld()
         fun onGetHomeWorldResponse(homeWorld: HomeWorld)
+        fun onDestroy()
     }
 
     interface Interactor {

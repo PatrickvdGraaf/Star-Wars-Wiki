@@ -13,7 +13,7 @@ import nl.graaf.starwarswiki.ui.detail.DetailActivity
 
 class CharacterActivity : AppCompatActivity(), CharacterMVP.View {
 
-    private val mPresenter by lazy { CharacterPresenter(this) }
+    private val mPresenter by lazy { CharacterPresenter(applicationContext,this) }
     private lateinit var mSortingButton: FloatingActionButton
 
     private lateinit var mAdapter: CharacterAdapter

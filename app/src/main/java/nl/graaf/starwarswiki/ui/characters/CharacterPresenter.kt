@@ -1,11 +1,10 @@
 package nl.graaf.starwarswiki.ui.characters
 
 import android.content.Context
-import android.os.Handler
 import nl.graaf.starwarswiki.R
 import nl.graaf.starwarswiki.database.CharacterDatabase
-import nl.graaf.starwarswiki.database.DbWorkerThread
 import nl.graaf.starwarswiki.model.Character
+import nl.graaf.starwarswiki.ui.base.DbPresenter
 
 /**
  *
@@ -16,57 +15,33 @@ enum class SortingType {
     BIRTH, NAME
 }
 
-class CharacterPresenter(private val mView: CharacterMVP.View) : CharacterMVP.Presenter {
+class CharacterPresenter(context: Context, private val mView: CharacterMVP.View )
+    : CharacterMVP.Presenter, DbPresenter(context) {
     private val mInteractor by lazy { CharacterInteractor(this) }
     private val mCharacters = mutableListOf<Character>()
 
     private var mSortingType = SortingType.NAME
 
-    private var mDbWorkerThread: DbWorkerThread = DbWorkerThread("dbWorkerThread")
-    private var mDb: CharacterDatabase? = null
-
-    private val mUiHandler = Handler()
-
     override fun showCharacters(context: Context) {
         mDb = CharacterDatabase.getInstance(context)
-        fetchCharactersFromDb()
-    }
-
-    private fun fetchCharactersFromDb() {
-        if (!mDbWorkerThread.isAlive) {
-            mDbWorkerThread.start()
-        }
-
-        val task = Runnable {
-            val characterData = mDb?.characterDao()?.getAll()
-            if (characterData == null || characterData.isEmpty()) {
+        fetchCharactersFromDb({ data ->
+            if (data == null || data.isEmpty()) {
                 mInteractor.getCharactersFromApi()
             } else {
                 mUiHandler.post({
-                    characterData.let {
+                    data.let {
                         mCharacters.addAll(it)
                         sortCharacters()
                     }
                 })
             }
-        }
-        mDbWorkerThread.postTask(task)
+        })
     }
 
     override fun onGetCharacters(characters: List<Character>) {
         mCharacters.addAll(characters)
         insertCharacterDataInDb(characters)
         sortCharacters()
-    }
-
-    private fun insertCharacterDataInDb(list: List<Character>) {
-        val task = Runnable { mDb?.characterDao()?.insertAll(list) }
-        mDbWorkerThread.postTask(task)
-    }
-
-    private fun updateCharacterInDb(character: Character) {
-        val task = Runnable { mDb?.characterDao()?.updateCharacter(character) }
-        mDbWorkerThread.postTask(task)
     }
 
     override fun getTotalCharactersCount() = mCharacters.size
