@@ -1,4 +1,4 @@
-package nl.graaf.starwarswiki.ui.character
+package nl.graaf.starwarswiki.ui.characters
 
 import android.support.annotation.DrawableRes
 import nl.graaf.starwarswiki.model.Character
@@ -14,6 +14,7 @@ class CharacterMVP {
         fun setSortingButtonIcon(@DrawableRes image: Int)
         fun setCharacterList()
         fun showError()
+        fun openDetailActivity(character: Character)
     }
 
     interface Presenter {
@@ -22,6 +23,7 @@ class CharacterMVP {
         fun onGetCharacters(characters: List<Character> = listOf())
         fun getTotalCharactersCount(): Int
         fun onBindViewHolder(holder: CharacterAdapter.CharacterViewHolder, position: Int)
+        fun onItemSelected(layoutPosition: Int)
         fun onError()
     }
 

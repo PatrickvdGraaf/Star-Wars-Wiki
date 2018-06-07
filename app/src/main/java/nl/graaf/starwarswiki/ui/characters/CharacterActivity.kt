@@ -1,5 +1,6 @@
-package nl.graaf.starwarswiki.ui.character
+package nl.graaf.starwarswiki.ui.characters
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AppCompatActivity
@@ -7,6 +8,8 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.Toast
 import nl.graaf.starwarswiki.R
+import nl.graaf.starwarswiki.model.Character
+import nl.graaf.starwarswiki.ui.detail.DetailActivity
 
 class CharacterActivity : AppCompatActivity(), CharacterMVP.View {
     private val mPresenter by lazy { CharacterPresenter(this) }
@@ -40,6 +43,12 @@ class CharacterActivity : AppCompatActivity(), CharacterMVP.View {
         mSortingButton.setImageResource(image)
     }
 
+
+    override fun openDetailActivity(character: Character) {
+        val intent = Intent(this, DetailActivity::class.java)
+        intent.putExtra("character", character)
+        startActivity(intent)
+    }
 
     override fun showError() {
         Toast.makeText(this, "Could not load characters", Toast.LENGTH_SHORT).show()

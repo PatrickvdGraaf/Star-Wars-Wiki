@@ -1,4 +1,4 @@
-package nl.graaf.starwarswiki.ui.character
+package nl.graaf.starwarswiki.ui.characters
 
 import nl.graaf.starwarswiki.R
 import nl.graaf.starwarswiki.model.Character
@@ -33,17 +33,25 @@ class CharacterPresenter(private val mView: CharacterMVP.View) : CharacterMVP.Pr
         val character = mCharacters[position]
         holder.nameTextView.text = character.name
         holder.birthTextView.text = character.birthYear
+
+        holder.favButton.setOnClickListener({
+            //TODO
+        })
+    }
+
+    override fun onItemSelected(layoutPosition: Int) {
+        mView.openDetailActivity(mCharacters[layoutPosition])
     }
 
     override fun toggleSort() {
         when (mSortingType) {
             SortingType.NAME -> {
                 mSortingType = SortingType.BIRTH
-                mView.setSortingButtonIcon(R.drawable.ic_birth_24dp)
+                mView.setSortingButtonIcon(R.drawable.ic_sort_name_24dp)
             }
             SortingType.BIRTH -> {
                 mSortingType = SortingType.NAME
-                mView.setSortingButtonIcon(R.drawable.ic_sort_name_24dp)
+                mView.setSortingButtonIcon(R.drawable.ic_birth_24dp)
             }
         }
 
