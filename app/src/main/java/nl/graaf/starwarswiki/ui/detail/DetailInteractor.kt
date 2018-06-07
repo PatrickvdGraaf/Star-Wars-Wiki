@@ -24,11 +24,11 @@ class DetailInteractor(private val mPresenter: DetailMVP.Presenter) : DetailMVP.
                 })
     }
 
-    override fun getVehiclesFromApi(urls: List<String>) {
+    override fun getVehiclesFromApi(links: List<String>) {
         val repository = CharacterRepositoryProvider.provideCharacterRepository()
         val requests = ArrayList<Observable<*>>()
 
-        urls.forEach({ url ->
+        links.forEach({ url ->
             requests.add(repository.getVehicle(url))
         })
 

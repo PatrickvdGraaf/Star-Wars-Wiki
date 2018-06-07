@@ -1,5 +1,8 @@
 package nl.graaf.starwarswiki.model
 
+import android.arch.persistence.room.ColumnInfo
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.PrimaryKey
 import java.io.Serializable
 
 /**
@@ -8,6 +11,8 @@ import java.io.Serializable
  *
  */
 
+@Entity(tableName = "homeWorldData")
 data class HomeWorld(
-        val name: String
+        @PrimaryKey(autoGenerate = true) var id: Long? = null,
+        @ColumnInfo(name = "name") val name: String = ""
 ): Serializable

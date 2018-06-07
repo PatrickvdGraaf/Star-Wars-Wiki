@@ -10,6 +10,7 @@ import timber.log.Timber
  * Created by Patrick van de Graaf on 6/7/2018.
  *
  */
+// TODO zip results
 
 class CharacterInteractor(private val mPresenter: CharacterMVP.Presenter) : CharacterMVP.Interactor {
     override fun getCharactersFromApi(page: Int) {

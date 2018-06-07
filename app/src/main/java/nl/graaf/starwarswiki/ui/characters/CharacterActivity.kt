@@ -13,7 +13,7 @@ import nl.graaf.starwarswiki.ui.detail.DetailActivity
 
 class CharacterActivity : AppCompatActivity(), CharacterMVP.View {
 
-    private val mPresenter by lazy { CharacterPresenter(this) }
+    private val mPresenter by lazy { CharacterPresenter(applicationContext,this) }
     private lateinit var mSortingButton: FloatingActionButton
 
     private lateinit var mAdapter: CharacterAdapter
@@ -33,7 +33,7 @@ class CharacterActivity : AppCompatActivity(), CharacterMVP.View {
             mPresenter.toggleSort()
         })
 
-        mPresenter.showCharacters()
+        mPresenter.showCharacters(this)
     }
 
     override fun setCharacterList() {
@@ -52,5 +52,10 @@ class CharacterActivity : AppCompatActivity(), CharacterMVP.View {
 
     override fun showError() {
         Toast.makeText(this, "Could not load characters", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroy() {
+        mPresenter.onDestroy()
+        super.onDestroy()
     }
 }

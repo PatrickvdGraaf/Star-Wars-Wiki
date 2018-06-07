@@ -1,7 +1,10 @@
 package nl.graaf.starwarswiki.ui.characters
 
+import android.content.Context
 import nl.graaf.starwarswiki.R
+import nl.graaf.starwarswiki.database.CharacterDatabase
 import nl.graaf.starwarswiki.model.Character
+import nl.graaf.starwarswiki.ui.base.DbPresenter
 
 /**
  *
@@ -12,18 +15,32 @@ enum class SortingType {
     BIRTH, NAME
 }
 
-class CharacterPresenter(private val mView: CharacterMVP.View) : CharacterMVP.Presenter {
+class CharacterPresenter(context: Context, private val mView: CharacterMVP.View )
+    : CharacterMVP.Presenter, DbPresenter(context) {
     private val mInteractor by lazy { CharacterInteractor(this) }
     private val mCharacters = mutableListOf<Character>()
 
     private var mSortingType = SortingType.NAME
 
-    override fun showCharacters() {
-        mInteractor.getCharactersFromApi()
+    override fun showCharacters(context: Context) {
+        mDb = CharacterDatabase.getInstance(context)
+        fetchCharactersFromDb({ data ->
+            if (data == null || data.isEmpty()) {
+                mInteractor.getCharactersFromApi()
+            } else {
+                mUiHandler.post({
+                    data.let {
+                        mCharacters.addAll(it)
+                        sortCharacters()
+                    }
+                })
+            }
+        })
     }
 
     override fun onGetCharacters(characters: List<Character>) {
         mCharacters.addAll(characters)
+        insertCharacterDataInDb(characters)
         sortCharacters()
     }
 
@@ -39,7 +56,13 @@ class CharacterPresenter(private val mView: CharacterMVP.View) : CharacterMVP.Pr
         holder.favButton.setOnClickListener({
             character.toggleFavourite()
             holder.setFavouriteIcon(character.isFavourite)
+            updateCharacterInDb(character)
         })
+    }
+
+    override fun onDestroy() {
+        CharacterDatabase.destroyInstance()
+        mDbWorkerThread.quit()
     }
 
     override fun onItemSelected(layoutPosition: Int) {

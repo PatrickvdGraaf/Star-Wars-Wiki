@@ -1,5 +1,6 @@
 package nl.graaf.starwarswiki.ui.characters
 
+import android.content.Context
 import android.support.annotation.DrawableRes
 import nl.graaf.starwarswiki.model.Character
 
@@ -18,13 +19,14 @@ class CharacterMVP {
     }
 
     interface Presenter {
-        fun showCharacters()
+        fun showCharacters(context: Context)
         fun toggleSort()
         fun onGetCharacters(characters: List<Character> = listOf())
         fun getTotalCharactersCount(): Int
         fun onBindViewHolder(holder: CharacterAdapter.CharacterViewHolder, position: Int)
         fun onItemSelected(layoutPosition: Int)
         fun onError()
+        fun onDestroy()
     }
 
     interface Interactor {
