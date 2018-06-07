@@ -1,6 +1,10 @@
 package nl.graaf.starwarswiki.ui.characters
 
+import android.content.Context
+import android.os.Handler
 import nl.graaf.starwarswiki.R
+import nl.graaf.starwarswiki.database.CharacterDatabase
+import nl.graaf.starwarswiki.database.DbWorkerThread
 import nl.graaf.starwarswiki.model.Character
 
 /**
@@ -18,13 +22,51 @@ class CharacterPresenter(private val mView: CharacterMVP.View) : CharacterMVP.Pr
 
     private var mSortingType = SortingType.NAME
 
-    override fun showCharacters() {
-        mInteractor.getCharactersFromApi()
+    private var mDbWorkerThread: DbWorkerThread = DbWorkerThread("dbWorkerThread")
+    private var mDb: CharacterDatabase? = null
+
+    private val mUiHandler = Handler()
+
+    override fun showCharacters(context: Context) {
+        mDb = CharacterDatabase.getInstance(context)
+        fetchCharactersFromDb()
+    }
+
+    private fun fetchCharactersFromDb() {
+        if (!mDbWorkerThread.isAlive) {
+            mDbWorkerThread.start()
+        }
+
+        val task = Runnable {
+            val characterData = mDb?.characterDao()?.getAll()
+            if (characterData == null || characterData.isEmpty()) {
+                mInteractor.getCharactersFromApi()
+            } else {
+                mUiHandler.post({
+                    characterData.let {
+                        mCharacters.addAll(it)
+                        sortCharacters()
+                    }
+                })
+            }
+        }
+        mDbWorkerThread.postTask(task)
     }
 
     override fun onGetCharacters(characters: List<Character>) {
         mCharacters.addAll(characters)
+        insertCharacterDataInDb(characters)
         sortCharacters()
+    }
+
+    private fun insertCharacterDataInDb(list: List<Character>) {
+        val task = Runnable { mDb?.characterDao()?.insertAll(list) }
+        mDbWorkerThread.postTask(task)
+    }
+
+    private fun updateCharacterInDb(character: Character) {
+        val task = Runnable { mDb?.characterDao()?.updateCharacter(character) }
+        mDbWorkerThread.postTask(task)
     }
 
     override fun getTotalCharactersCount() = mCharacters.size
@@ -39,7 +81,13 @@ class CharacterPresenter(private val mView: CharacterMVP.View) : CharacterMVP.Pr
         holder.favButton.setOnClickListener({
             character.toggleFavourite()
             holder.setFavouriteIcon(character.isFavourite)
+            updateCharacterInDb(character)
         })
+    }
+
+    override fun onDestroy() {
+        CharacterDatabase.destroyInstance()
+        mDbWorkerThread.quit()
     }
 
     override fun onItemSelected(layoutPosition: Int) {

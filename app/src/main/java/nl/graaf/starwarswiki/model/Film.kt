@@ -1,5 +1,8 @@
 package nl.graaf.starwarswiki.model
 
+import android.arch.persistence.room.ColumnInfo
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
@@ -9,16 +12,10 @@ import java.io.Serializable
  *
  */
 
+@Entity(tableName = "filmsData")
 data class Film(
-        val title: String,
+        @PrimaryKey(autoGenerate = true) var id: Long? = null,
+        @ColumnInfo(name = "title") val title: String = "",
         @SerializedName("episode_id")
-        val episode: Int,
-        @SerializedName("opening_crawl")
-        val openingCrawl: String,
-        val director: String,
-        val producer: String,
-        @SerializedName("release_date")
-        val releaseDate: String,
-        val characters: List<String>,
-        val vehicles: List<String>
-): Serializable
+        @ColumnInfo(name = "episode") val episode: Int = 0
+) : Serializable
