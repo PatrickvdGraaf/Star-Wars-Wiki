@@ -5,8 +5,8 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
 import android.content.Context
-import nl.graaf.starwarswiki.config.Converters
 import nl.graaf.starwarswiki.model.Character
+import javax.inject.Singleton
 
 /**
  *
@@ -18,23 +18,4 @@ import nl.graaf.starwarswiki.model.Character
 @TypeConverters(Converters::class)
 abstract class CharacterDatabase : RoomDatabase() {
     abstract fun characterDao(): CharacterDataDao
-
-    companion object {
-        private var INSTANCE: CharacterDatabase? = null
-
-        fun getInstance(context: Context): CharacterDatabase? {
-            if (INSTANCE == null) {
-                synchronized(CharacterDatabase::class) {
-                    INSTANCE = Room.databaseBuilder(context.applicationContext,
-                            CharacterDatabase::class.java, "characters.db")
-                            .build()
-                }
-            }
-            return INSTANCE
-        }
-
-        fun destroyInstance() {
-            INSTANCE = null
-        }
-    }
 }

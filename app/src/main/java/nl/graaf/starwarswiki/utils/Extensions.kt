@@ -1,4 +1,4 @@
-package nl.graaf.starwarswiki.config
+package nl.graaf.starwarswiki.utils
 
 import android.support.annotation.LayoutRes
 import android.view.LayoutInflater

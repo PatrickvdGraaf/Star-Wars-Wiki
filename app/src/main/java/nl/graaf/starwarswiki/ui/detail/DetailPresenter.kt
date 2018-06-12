@@ -5,7 +5,7 @@ import nl.graaf.starwarswiki.model.Character
 import nl.graaf.starwarswiki.model.Film
 import nl.graaf.starwarswiki.model.HomeWorld
 import nl.graaf.starwarswiki.model.Vehicle
-import nl.graaf.starwarswiki.ui.base.DbPresenter
+import nl.graaf.starwarswiki.ui.base.HybridPresenter
 
 /**
  *
@@ -18,15 +18,14 @@ import nl.graaf.starwarswiki.ui.base.DbPresenter
 class DetailPresenter(context: Context,
                       private val mView: DetailMVP.View,
                       private val mCharacter: Character)
-    : DetailMVP.Presenter, DbPresenter(context) {
-    private val mInteractor by lazy { DetailInteractor(this) }
+    : DetailMVP.Presenter, HybridPresenter(context) {
 
     override fun loadMovies() {
         if (mCharacter.filmsList.isEmpty()) {
             if (!isNetworkConnected()) {
                 return
             }
-            mInteractor.getFilmsFromApi(mCharacter.filmUrls)
+//            mInteractor.getFilmsFromApi(mCharacter.filmUrls)
         } else {
             setFilmsText(mCharacter.filmsList)
         }
@@ -37,7 +36,7 @@ class DetailPresenter(context: Context,
             if (!isNetworkConnected()) {
                 return
             }
-            mInteractor.getVehiclesFromApi(mCharacter.vehicleUrls)
+//            mInteractor.getVehiclesFromApi(mCharacter.vehicleUrls)
         } else {
             setVehicleText(mCharacter.vehiclesList)
         }
@@ -48,7 +47,7 @@ class DetailPresenter(context: Context,
             if (!isNetworkConnected()) {
                 return
             }
-            mInteractor.getHomeWorldFromApi(mCharacter.homeWorldUrl)
+//            mInteractor.getHomeWorldFromApi(mCharacter.homeWorldUrl)
         } else {
             mView.setHomeWorldText(mCharacter.home!!.name)
         }

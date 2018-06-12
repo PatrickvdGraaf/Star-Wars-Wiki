@@ -3,7 +3,7 @@ package nl.graaf.starwarswiki.model
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 import java.io.Serializable
 
 /**
@@ -16,6 +16,6 @@ import java.io.Serializable
 data class Film(
         @PrimaryKey(autoGenerate = true) var id: Long? = null,
         @ColumnInfo(name = "title") val title: String = "",
-        @SerializedName("episode_id")
+        @Json(name = "episode_id")
         @ColumnInfo(name = "episode") val episode: Int = 0
 ) : Serializable

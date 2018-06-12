@@ -3,6 +3,7 @@ package nl.graaf.starwarswiki.ui.detail
 import nl.graaf.starwarswiki.model.Film
 import nl.graaf.starwarswiki.model.HomeWorld
 import nl.graaf.starwarswiki.model.Vehicle
+import nl.graaf.starwarswiki.ui.base.iApiPresenter
 
 /**
  *
@@ -17,14 +18,13 @@ class DetailMVP {
         fun setHomeWorldText(h: String)
     }
 
-    interface Presenter {
+    interface Presenter : iApiPresenter {
         fun loadMovies()
         fun onGetFilmsResponse(films: List<Film>)
         fun loadVehicles()
         fun onGetVehiclesResponse(vehicles: List<Vehicle>)
         fun loadHomeWorld()
         fun onGetHomeWorldResponse(homeWorld: HomeWorld)
-        fun onDestroy()
     }
 
     interface Interactor {

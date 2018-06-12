@@ -3,10 +3,11 @@ package nl.graaf.starwarswiki.ui.base
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Handler
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import nl.graaf.starwarswiki.database.CharacterDatabase
 import nl.graaf.starwarswiki.database.DbWorkerThread
 import nl.graaf.starwarswiki.model.Character
-
 
 
 /**
@@ -14,7 +15,9 @@ import nl.graaf.starwarswiki.model.Character
  * Created by Patrick van de Graaf on 6/7/2018.
  *
  */
-open class DbPresenter(context: Context) {
+open class HybridPresenter(context: Context) : iDbPresenter, iApiPresenter {
+    private val mSubscription: CompositeDisposable = CompositeDisposable()
+
     protected var mDbWorkerThread: DbWorkerThread = DbWorkerThread("dbWorkerThread")
     protected var mDb: CharacterDatabase? = CharacterDatabase.getInstance(context)
     private val mConnectionManger = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -43,14 +46,21 @@ open class DbPresenter(context: Context) {
     }
 
     protected fun updateCharacterInDb(character: Character) {
-        if (!mDbWorkerThread.isAlive) {
-            mDbWorkerThread.start()
-        }
         val task = Runnable { mDb?.characterDao()?.updateCharacter(character) }
         mDbWorkerThread.postTask(task)
     }
 
     protected fun isNetworkConnected(): Boolean {
         return mConnectionManger.activeNetworkInfo != null
+    }
+
+    override fun addToSubscription(disposable: Disposable) {
+        mSubscription.add(disposable)
+    }
+
+    override fun onDestroy() {
+        CharacterDatabase.destroyInstance()
+        mDbWorkerThread.quit()
+        mSubscription.clear()
     }
 }
